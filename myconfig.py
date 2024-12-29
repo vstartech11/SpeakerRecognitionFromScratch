@@ -17,12 +17,13 @@ UTT_TEST_FILE_DIRECT="G0112/G0112_0_S0001.wav"
 TRAINING_STEPS = 500
 
 # Set random seed for reproducibility
-SEED = 29
-
+SEED = 35
+SAMPLE_RATE = 16000
 if USE_CUSTOMIZE_DATASETS:
     # path of indonesian datasets
     TRAIN_DATA_DIR = os.path.join(f"{DATA_PATH}/datasets/ASR-SIndoDuSC/WAV/train")
     TEST_DATA_DIR = os.path.join(f"{DATA_PATH}/datasets/ASR-SIndoDuSC/WAV/test")
+    TESTING_MANUAL_DIR = os.path.join(f"{DATA_PATH}/datasets/Bintang")
     # Path of save model.
     SAVED_MODEL_PATH = os.path.join(
     f"./saved_model/trained/saved_model.bilstm.mean.customize.gpu{str(TRAINING_STEPS)}.pt")

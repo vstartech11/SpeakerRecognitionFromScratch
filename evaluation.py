@@ -114,25 +114,33 @@ def run_eval():
     random.seed(myconfig.SEED)
     """Run evaluation of the saved model on test data."""
     start_time = time.time()
-    if myconfig.TEST_DATA_CSV:
-        spk_to_utts = dataset.get_csv_spk_to_utts(
-            myconfig.TEST_DATA_CSV)
+    print("Select evaluation mode:")
+    print("1. Eval with existing dataset")
+    print("2. Eval with manual data")
+    choice = input("Enter choice (1/2): ")
 
-        print("Evaluation data:", myconfig.TEST_DATA_CSV)
-    else:
-        if myconfig.USE_CUSTOMIZE_DATASETS:
-            spk_to_utts = dataset.get_customize_spk_to_utts(
-            myconfig.TEST_DATA_DIR)
-            print(len(spk_to_utts))
-
-            print("Evaluasi data with customize datasets:", myconfig.TEST_DATA_DIR)
+    if choice == '1':
+        if myconfig.TEST_DATA_CSV:
+            spk_to_utts = dataset.get_csv_spk_to_utts(
+                myconfig.TEST_DATA_CSV)
+            print("Evaluation data:", myconfig.TEST_DATA_CSV)
         else:
-            spk_to_utts = dataset.get_librispeech_spk_to_utts(
-                myconfig.TEST_DATA_DIR)
-            print("Evaluasi data with Librispeech datasets:", myconfig.TEST_DATA_DIR)
-        # spk_to_utts = dataset.get_librispeech_spk_to_utts(
-        #     myconfig.TEST_DATA_DIR)
-        # print("Evaluation data:", myconfig.TEST_DATA_DIR)
+            if myconfig.USE_CUSTOMIZE_DATASETS:
+                spk_to_utts = dataset.get_customize_spk_to_utts(
+                    myconfig.TEST_DATA_DIR)
+                print(len(spk_to_utts))
+                print("Evaluation data with customize datasets:", myconfig.TEST_DATA_DIR)
+            else:
+                spk_to_utts = dataset.get_librispeech_spk_to_utts(
+                    myconfig.TEST_DATA_DIR)
+                print("Evaluation data with Librispeech datasets:", myconfig.TEST_DATA_DIR)
+    elif choice == '2':
+        spk_to_utts = dataset.get_customize_spk_to_utts(
+            myconfig.TESTING_MANUAL_DIR)
+        print("Evaluation data with manual datasets:", myconfig.TESTING_MANUAL_DIR)
+    else:
+        print("Invalid choice")
+        return
     encoder = neural_net.get_speaker_encoder(
         myconfig.SAVED_MODEL_PATH)
     labels, scores = compute_scores(

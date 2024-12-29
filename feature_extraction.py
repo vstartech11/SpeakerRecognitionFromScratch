@@ -1,12 +1,13 @@
-import librosa
-import soundfile as sf
-import random
-import torch
-import numpy as np
 import functools
+import random
 
-import myconfig
+import librosa
+import numpy as np
+import soundfile as sf
+import torch
+
 import dataset
+import myconfig
 import specaug
 
 SAMPLE_RATE = 16000
@@ -22,7 +23,7 @@ def extract_features(audio_file):
 
     # Convert to 16kHz.
     if sample_rate != SAMPLE_RATE:
-        waveform = librosa.resample(waveform, sample_rate, SAMPLE_RATE)
+        waveform = librosa.resample(y=waveform, orig_sr=sample_rate, target_sr=SAMPLE_RATE)
 
     features = librosa.feature.mfcc(
         y=waveform, sr=SAMPLE_RATE, n_mfcc=myconfig.N_MFCC)
