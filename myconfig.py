@@ -17,7 +17,7 @@ UTT_TEST_FILE_DIRECT="G0112/G0112_0_S0001.wav"
 TRAINING_STEPS = 500
 
 # Set random seed for reproducibility
-SEED = 35
+SEED = 42
 SAMPLE_RATE = 16000
 if USE_CUSTOMIZE_DATASETS:
     # path of indonesian datasets

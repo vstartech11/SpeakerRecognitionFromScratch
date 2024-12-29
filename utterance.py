@@ -34,7 +34,7 @@ def split_by_utterance(input_wav, output_dir, silence_thresh=-40, min_silence_le
 
     # Save each chunk as a separate file with the desired naming convention
     for i, chunk in enumerate(chunks):
-        output_file = os.path.join(output_dir, f"G0001_0_S{str(i + 1).zfill(4)}.wav")
+        output_file = os.path.join(output_dir, f"G0045_0_S{str(i + 1).zfill(4)}.wav")
         chunk.export(output_file, format="wav")
         print(f"Saved: {output_file}")
 
@@ -65,14 +65,14 @@ if __name__ == "__main__":
     import myconfig
 
     # Input WAV file
-    input_wav = r"G:\ITK\Project2\Dataset\datasets\G0001\G00001_0_S0001.wav"
+    input_wav = r"G:\ITK\Project2\Dataset\datasets\G0001\yoga.wav"
 
     # Output directory
-    output_dir = os.path.join(f"{myconfig.DATA_PATH}/datasets/Bintang/G0043")
+    output_dir = os.path.join(f"{myconfig.DATA_PATH}/datasets/Bintang/G0045")
 
     # Parameters for silence detection
     silence_thresh = -30  # Silence threshold in dBFS
-    min_silence_len = 300  # Minimum silence length in milliseconds
+    min_silence_len = 200  # Minimum silence length in milliseconds
 
     # Perform the split
     split_by_utterance(input_wav, output_dir, silence_thresh, min_silence_len)
