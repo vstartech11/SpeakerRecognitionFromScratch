@@ -121,7 +121,7 @@ def save_model(saved_model_path, encoder, losses, start_time):
         saved_model_path += ".pt"
     torch.save({"encoder_state_dict": encoder.state_dict(),
                 "losses": losses,
-                "training_time": training_time},saved_model_path)
+                "training_time": training_time}, saved_model_path)
 
 
 def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
@@ -163,46 +163,7 @@ def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
         save_model(saved_model, encoder, losses, start_time)
     return losses
 
-# Tambahkan fungsi evaluasi
 
-def calculate_eer(fpr, tpr):
-    """Calculate Equal Error Rate (EER)"""
-    fnr = 1 - tpr
-    eer_threshold = np.argmin(np.abs(fpr - fnr))
-    eer = (fpr[eer_threshold] + fnr[eer_threshold]) / 2
-    return eer
-
-def evaluate_model(encoder, test_data):
-    """Evaluate the model and calculate EER and AUC."""
-    encoder.eval()
-    with torch.no_grad():
-        positive_scores = []
-        negative_scores = []
-
-        for anchor, positive, negative in test_data:
-            anchor_emb = encoder(anchor.to(myconfig.DEVICE))
-            positive_emb = encoder(positive.to(myconfig.DEVICE))
-            negative_emb = encoder(negative.to(myconfig.DEVICE))
-
-            cos = nn.CosineSimilarity(dim=-1, eps=1e-6)
-            positive_scores.append(cos(anchor_emb, positive_emb).cpu().numpy())
-            negative_scores.append(cos(anchor_emb, negative_emb).cpu().numpy())
-
-        # Combine scores
-        scores = np.concatenate([positive_scores, negative_scores])
-        labels = np.concatenate([np.ones(len(positive_scores)), np.zeros(len(negative_scores))])
-
-        # Calculate ROC and AUC
-        fpr, tpr, _ = roc_curve(labels, scores)
-        roc_auc = auc(fpr, tpr)
-
-        # Calculate EER
-        eer = calculate_eer(fpr, tpr)
-
-    return eer, roc_auc, fpr, tpr
-
-
-# Modifikasi fungsi run_training
 def run_training():
     
     torch.manual_seed(myconfig.SEED)
@@ -220,11 +181,9 @@ def run_training():
         print("Training data with Librispeech datasets:", myconfig.TRAIN_DATA_DIR)
 
     print(len(spk_to_utts), "speakers")
-    with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
-        losses = train_network(spk_to_utts,
-                               myconfig.TRAINING_STEPS,
-                               myconfig.SAVED_MODEL_PATH,
-                               pool)
+    losses = train_network(spk_to_utts,
+                           myconfig.TRAINING_STEPS,
+                           myconfig.SAVED_MODEL_PATH)
 
     # Menampilkan grafik menggunakan Matplotlib
     plt.plot(losses)
@@ -243,46 +202,16 @@ def run_training():
     # Tampilkan grafik
     plt.show()
 
+    # Menampilkan informasi tambahan
+    total_loss = sum(losses)
+    avg_loss = total_loss / len(losses)
+    print(f"Total loss: {total_loss}")
+    print(f"Average loss: {avg_loss}")
 
-def menu():
-    """Display menu for selecting train or evaluation."""
-    print("Pilih mode operasi:")
-    print("1. Train")
-    print("2. Evaluasi")
-    choice = input("Masukkan pilihan (1/2): ")
-    return choice.strip()
 
 def main():
-    choice = menu()
-    if choice == "1":
-        print("Mode: Train")
-        run_training()
-    elif choice == "2":
-        print("Mode: Evaluasi")
-        if myconfig.TEST_DATA_DIR:
-            spk_to_utts = dataset.get_customize_spk_to_utts(
-            myconfig.TEST_DATA_DIR)
-            encoder = get_speaker_encoder(
-        myconfig.SAVED_MODEL_PATH)
-
-            eer, roc_auc, fpr, tpr = evaluate_model(encoder, spk_to_utts)
-
-            print(f"EER: {eer * 100:.2f}%")
-            print(f"AUC: {roc_auc:.4f}")
-
-            # Visualize ROC curve
-            plt.figure()
-            plt.plot(fpr, tpr, label=f"ROC curve (AUC = {roc_auc:.4f})")
-            plt.plot([0, 1], [0, 1], 'k--')
-            plt.xlabel("False Positive Rate")
-            plt.ylabel("True Positive Rate")
-            plt.title("Receiver Operating Characteristic")
-            plt.legend(loc="lower right")
-            plt.show()
-        else:
-            print("Error: Direktori data uji tidak ditemukan. Periksa konfigurasi.")
-    else:
-        print("Pilihan tidak valid. Harap masukkan 1 atau 2.")
+    print("Mode: Train")
+    run_training()
 
 
 if __name__ == "__main__":

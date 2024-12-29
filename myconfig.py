@@ -17,7 +17,7 @@ UTT_TEST_FILE_DIRECT="G0112/G0112_0_S0001.wav"
 TRAINING_STEPS = 500
 
 # Set random seed for reproducibility
-SEED = 44
+SEED = 29
 
 if USE_CUSTOMIZE_DATASETS:
     # path of indonesian datasets
@@ -77,7 +77,7 @@ SEQ_LEN = 100  # 3.2 seconds
 TRIPLET_ALPHA = 0.2
 
 # How many triplets do we train in a single batch.
-BATCH_SIZE = 8
+BATCH_SIZE = 16
 
 # Learning rate.
 LEARNING_RATE = 0.000085
